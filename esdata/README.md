@@ -1,1 +1,1 @@
-store elasticsearch data
+elasticsearch data storage
