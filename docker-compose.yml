@@ -1,0 +1,70 @@
+version: '2.2'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0
+    container_name: elasticsearch
+    restart: unless-stopped
+    environment:
+      - cluster.name=docker-cluster
+      - node.name=node1
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms384m -Xmx384m"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch2"
+      - "cluster.initial_master_nodes=node1"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./esdata:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - es7net
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash-oss:7.2.0
+    command: -f /usr/share/logstash/pipeline/logstash-logspout.conf
+    hostname: logstash
+    restart: always
+    volumes:
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+    ports:
+      - "127.0.0.1:5000:5000/udp"
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    networks:
+      - es7net
+    depends_on:
+      - elasticsearch
+
+  logspout:
+    image: bekt/logspout-logstash
+    hostname: logspout
+    restart: always
+    environment:
+      ROUTE_URIS: logstash+tcp://logstash:5000
+    depends_on:
+      - logstash
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - es7net
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana-oss:7.2.0
+    container_name: kibana
+    environment:
+      SERVER_NAME: kibana_server
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    networks:
+      - es7net
+    depends_on:
+      - elasticsearch
+    ports:
+      - 5601:5601
+
+
+networks:
+  es7net:
