@@ -10,7 +10,6 @@ services:
       - node.name=node1
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms384m -Xmx384m"
-      - "discovery.zen.ping.unicast.hosts=elasticsearch2"
       - "cluster.initial_master_nodes=node1"
     ulimits:
       memlock:
@@ -25,13 +24,14 @@ services:
 
   logstash:
     image: docker.elastic.co/logstash/logstash-oss:7.2.0
-    command: -f /usr/share/logstash/pipeline/logstash-logspout.conf
     container_name: logstash
     hostname: logstash
     restart: always
     volumes:
-      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
       - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - ./logstash/data:/opt/logstash_data
+      - ./logstash/template:/opt/logstash_template
+      - ./logstash/logs:/usr/share/logstash/logs
     ports:
       - "127.0.0.1:5000:5000/udp"
     environment:

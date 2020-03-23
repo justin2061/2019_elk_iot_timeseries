@@ -1,0 +1,36 @@
+{
+
+    "index_patterns": ["covid19*", "covid-19*"],
+    "order": 1,
+    "settings": {
+      "number_of_shards": 1
+    },
+    "mappings": {
+      "properties" : {
+        "@timestamp" : {
+          "type" : "date"
+        },
+        "geoip" : {
+          "dynamic" : true,
+          "properties" : {
+            "ip" : {
+              "type" : "ip"
+            },
+            "latitude" : {
+              "type" : "half_float"
+            },
+            "location" : {
+              "type" : "geo_point"
+            },
+            "longitude" : {
+              "type" : "half_float"
+            }
+          }
+        },
+        "@version" : {
+          "type" : "keyword"
+        }
+      }
+    }
+  
+}
