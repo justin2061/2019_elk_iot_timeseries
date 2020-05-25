@@ -1,0 +1,13 @@
+# This file is where you define your pipelines. You can define multiple.
+# # For more information on multiple pipelines, see the documentation:
+# #   https://www.elastic.co/guide/en/logstash/current/multiple-pipelines.html
+#
+# - pipeline.id: view_es_data
+#   path.config: "/etc/logstash/conf.d/pms_db_sync.conf"   
+
+- pipeline.id: logspout_data
+  path.config: "/usr/share/logstash/pipeline/logstash-logspout.conf"   
+- pipeline.id: stock_data
+  path.config: "/usr/share/logstash/pipeline/stock_data_import.conf"   
+- pipeline.id: covid19_data
+  path.config: "/usr/share/logstash/pipeline/covid19_import.conf"   

@@ -28,10 +28,11 @@ services:
     hostname: logstash
     restart: always
     volumes:
+      - ./logstash/data:/usr/share/logstash/data:rw
+      - ./logstash/template:/usr/share/logstash/template:ro
+      #- ./logstash/logs:/usr/share/logstash/logs:rw
+      - ./logstash/config/pipelines.yml:/usr/share/logstash/config/pipelines.yml:ro
       - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
-      - ./logstash/data:/opt/logstash_data
-      - ./logstash/template:/opt/logstash_template
-      - ./logstash/logs:/usr/share/logstash/logs
     ports:
       - "127.0.0.1:5000:5000/udp"
     environment:
